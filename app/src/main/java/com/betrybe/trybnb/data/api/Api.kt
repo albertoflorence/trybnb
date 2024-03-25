@@ -11,7 +11,7 @@ object Api {
 
             val client = OkHttpClient.Builder().build()
             retrofit =
-                Retrofit.Builder().baseUrl("https://restful-booker.herokuapp.com/auth/")
+                Retrofit.Builder().baseUrl("https://restful-booker.herokuapp.com/")
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create()).build()
         }
