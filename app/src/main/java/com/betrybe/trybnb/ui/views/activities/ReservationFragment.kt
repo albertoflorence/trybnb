@@ -46,12 +46,12 @@ class ReservationFragment : Fragment() {
                 val r = response.body() ?: return@forEach
                 reservationList.add(
                     ReservationData(
-                        r.firstName + r.lastName,
-                        r.bookingDates.checkin,
-                        r.bookingDates.checkout,
-                        r.additionalNeeds,
-                        r.totalPrice,
-                        r.depositPaid
+                        r.firstname + r.lastname,
+                        r.bookingdates.checkin,
+                        r.bookingdates.checkout,
+                        r.additionalneeds,
+                        r.totalprice,
+                        r.depositpaid
                     )
                 )
             } else {

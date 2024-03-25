@@ -107,6 +107,14 @@
             android:layout_marginBottom="20dp"
             android:hint="Depósito Pago" />
 
+        <TextView
+            android:id="@+id/reservation_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reserva feita com sucesso!"
+            android:visibility="invisible"
+            android:gravity="center"/>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/create_reservation_button"
             android:layout_width="match_parent"

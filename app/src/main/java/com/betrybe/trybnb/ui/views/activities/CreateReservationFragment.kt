@@ -1,6 +1,7 @@
 package com.betrybe.trybnb.ui.views.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,15 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.betrybe.trybnb.R
+import com.betrybe.trybnb.common.ApiIdlingResource
+import com.betrybe.trybnb.data.api.Api
+import com.betrybe.trybnb.data.models.BookingDates
+import com.betrybe.trybnb.data.models.BookingDetails
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CreateReservationFragment : Fragment() {
 
@@ -21,6 +30,9 @@ class CreateReservationFragment : Fragment() {
     private lateinit var mTotalPriceCreateReservation: TextInputLayout
     private lateinit var mDepositPaidCreateReservation: CheckBox
     private lateinit var mCreateReservationButton: Button
+    private lateinit var mReservationMessage: TextView
+
+    private val api = Api.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,9 +50,23 @@ class CreateReservationFragment : Fragment() {
         mTotalPriceCreateReservation = view.findViewById(R.id.total_price_create_reservation)
         mDepositPaidCreateReservation = view.findViewById(R.id.depositpaid_create_reservation)
         mCreateReservationButton = view.findViewById(R.id.create_reservation_button)
+        mReservationMessage = view.findViewById(R.id.reservation_message)
 
         mCreateReservationButton.setOnClickListener {
-            if(!validateCreateReservation()) return@setOnClickListener
+            if (!validateCreateReservation()) return@setOnClickListener
+            createReservation(
+                BookingDetails(
+                    mFirstNameCreateReservation.editText?.text.toString(),
+                    mLastNameCreateReservation.editText?.text.toString(),
+                    mTotalPriceCreateReservation.editText?.text.toString().toDouble(),
+                    mDepositPaidCreateReservation.isChecked,
+                    BookingDates(
+                        mCheckInCreateReservation.editText?.text.toString(),
+                        mCheckoutCreateReservation.editText?.text.toString()
+                    ),
+                    mAdditionalNeedsCreateReservation.editText?.text.toString(),
+                )
+            )
         }
 
         return view
@@ -60,9 +86,22 @@ class CreateReservationFragment : Fragment() {
     private fun required(textView: TextInputLayout, field: String): Boolean {
         val text = textView.editText?.text.toString()
         textView.error = if (text.isBlank()) "O campo $field é obrigatório" else null
-
-        return textView.error == null
+        return textView.error != null
     }
 
-
+    private fun createReservation(booking: BookingDetails) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                ApiIdlingResource.increment()
+                withContext(Dispatchers.Main) {
+                    api.createBooking(booking)
+                    mReservationMessage.visibility = View.VISIBLE
+                    ApiIdlingResource.decrement()
+                }
+            } catch (ex: Exception) {
+                ApiIdlingResource.decrement()
+                ex.printStackTrace()
+            }
+        }
+    }
 }
