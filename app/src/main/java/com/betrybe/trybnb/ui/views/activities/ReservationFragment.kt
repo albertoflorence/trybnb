@@ -44,7 +44,6 @@ class ReservationFragment : Fragment() {
             val response = api.booking(it.bookingid)
             if (response.isSuccessful) {
                 val r = response.body() ?: return@forEach
-                Log.i("ABC", r.toString())
                 reservationList.add(
                     ReservationData(
                         r.firstName + r.lastName,
